@@ -12,7 +12,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
   const { invoiceId, status } = req.body;
 
   if (!xSignature) {
-    res.status(401).send({
+    res.status(400).send({
       message: 'X-Signature is missing',
     });
 
@@ -20,7 +20,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
   }
 
   if (!xTimestamp) {
-    res.status(401).send({
+    res.status(400).send({
       message: 'X-Timestamp is missing',
     });
 
@@ -28,7 +28,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
   }
 
   if (!xNonce) {
-    res.status(401).send({
+    res.status(400).send({
       message: 'X-Nonce is missing',
     });
 
