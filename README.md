@@ -1,6 +1,6 @@
 # Сервис приёма платежей
 
-1. Создать в корне проекта файл .env, заполнить переменные/
+1. Создать в корне проекта файл .env, заполнить переменные
    Пример:
     ```
    NODE_ENV=development
@@ -14,7 +14,7 @@
    MONGO_PASSWORD=password
    MONGO_PORT=27017
    MONGO_INITDB_ROOT_USERNAME=admin
-MONGO_INITDB_ROOT_PASSWORD=password
+   MONGO_INITDB_ROOT_PASSWORD=password
     ```
 
 2. Развернуть MongoDB и Redis
