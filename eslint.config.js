@@ -12,7 +12,7 @@ export default defineConfig([
   eslintPluginUnicorn.configs['recommended'],
   {
     files: ['**/*.{js,ts}'],
-    ignores: ['**/*.js', 'dist/**/*', 'node_modules/**/*'],
+    ignores: ['**/*.js', 'dist/**/*', 'node_modules/**/*', 'mongo-init.js'],
     plugins: {
       'simple-import-sort': simpleImportSort,
     },
@@ -23,6 +23,9 @@ export default defineConfig([
       'unicorn/no-process-exit': 'off',
       'unicorn/no-array-reduce': 'off',
       'unicorn/prevent-abbreviations': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'unicorn/no-abusive-eslint-disable': 'off',
+      'no-undef': 'off',
     },
   },
   {
