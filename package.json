@@ -6,16 +6,20 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx watch src/index.ts",
+    "start": "node --env-file=.env dist/index.js",
+    "dev": "tsx watch --env-file=.env src/index.ts",
     "format": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest"
   },
   "dependencies": {
+    "body-parser": "^2.2.2",
     "express": "^5.2.1",
-    "morgan": "^1.11.0"
+    "mongoose": "^9.6.3",
+    "morgan": "^1.11.0",
+    "redis": "^6.0.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
