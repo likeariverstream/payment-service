@@ -259,6 +259,49 @@ describe('POST /api/v1/webhook', () => {
     expect(actual.body).toEqual(expected);
   });
 
+  test('Should be return 401, invalid signature length', async () => {
+    const app = buildApp();
+
+    const merchant = await Merchant.create({
+      name: 'merchant',
+      feePercent: 0.1,
+    });
+
+    const invoice = await Invoice.create({
+      merchantId: merchant.externalId,
+      amount: 1_000_000,
+      fee: 100_000,
+      amountToReceive: 900_000,
+      status: 'pending',
+      currency: 'RUB',
+    });
+
+    const invoiceId = invoice.externalId;
+
+    const webhookPayload = {
+      invoiceId: invoiceId,
+      status: 'paid',
+    };
+
+    const xSignature = 'string';
+    const xNonce = randomUUID();
+    const xTimestamp = String(Date.now());
+
+    const actual = await supertest(app)
+      .post('/api/v1/webhook')
+      .set('X-Signature', xSignature)
+      .set('X-Timestamp', xTimestamp)
+      .set('X-Nonce', xNonce)
+      .send(webhookPayload)
+      .expect(401);
+
+    const expected = {
+      error: 'Invalid signature length',
+    };
+
+    expect(actual.body).toEqual(expected);
+  });
+
   test('Should be return 401, invalid signature', async () => {
     const app = buildApp();
 

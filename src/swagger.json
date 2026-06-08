@@ -1,0 +1,404 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Payment service API",
+    "description": "API description",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:3000/"
+    }
+  ],
+  "paths": {
+    "/api/v1/invoice/": {
+      "post": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "Создание счета",
+        "description": "Сумма передается в минимальных разменных денежных единицах, поддерживаемые типы валют - RUB, USD",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvoiceRequestBodySchema"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvoiceRequestBodySchema"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoice/{id}": {
+      "get": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "Получение счета на оплату",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/webhook/": {
+      "post": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Прием статуса оплаты",
+        "description": "Заголовки обязательны, окно толерантности для X-Timestamp - 5 минут",
+        "parameters": [
+          {
+            "name": "X-Signature",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Nonce",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Timestamp",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResponseBodySchema"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "description": "Some description...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Some description...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Some description...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookRequestBodySchema"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookRequestBodySchema"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/merchant/": {
+      "post": {
+        "tags": [
+          "Merchant"
+        ],
+        "summary": "Создание мерчанта",
+        "description": "Имя должно быть уникальным, процент комиссии - число от 0 до 1, до 4 знаков после запятой",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMerchantResponseBodySchema"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "description": "Some description...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMerchantRequestBodySchema"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMerchantRequestBodySchema"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Merchant"
+        ],
+        "summary": "Получение списка мерчантов",
+        "description": "По умолчанию page = 1, perPage = 50",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Some description...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMerchantsResponseBodySchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "WebhookRequestBodySchema": {
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "string",
+            "example": "2464eef0-6e67-4e08-b3ab-4422a7a0bcf6"
+          },
+          "status": {
+            "type": "string",
+            "example": "paid"
+          }
+        },
+        "required": [
+          "invoiceId",
+          "status"
+        ],
+        "xml": {
+          "name": "WebhookRequestBodySchema"
+        }
+      },
+      "WebhookResponseBodySchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "paid"
+          }
+        },
+        "xml": {
+          "name": "WebhookResponseBodySchema"
+        }
+      },
+      "ErrorSchema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "description"
+          }
+        },
+        "xml": {
+          "name": "ErrorSchema"
+        }
+      },
+      "CreateMerchantRequestBodySchema": {
+        "type": "object",
+        "properties": {
+          "feePercent": {
+            "type": "number",
+            "example": 0.1224
+          },
+          "name": {
+            "type": "string",
+            "example": "merchant_4"
+          }
+        },
+        "required": [
+          "feePercent",
+          "name"
+        ],
+        "xml": {
+          "name": "CreateMerchantRequestBodySchema"
+        }
+      },
+      "CreateMerchantResponseBodySchema": {
+        "type": "object",
+        "properties": {
+          "merchantId": {
+            "type": "string",
+            "example": "2464eef0-6e67-4e08-b3ab-4422a7a0bcf6"
+          },
+          "name": {
+            "type": "string",
+            "example": "merchant_4"
+          },
+          "feePercent": {
+            "type": "number",
+            "example": 0.1224
+          }
+        },
+        "xml": {
+          "name": "CreateMerchantResponseBodySchema"
+        }
+      },
+      "GetMerchantsResponseBodySchema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "merchantId": {
+              "type": "string",
+              "example": "2464eef0-6e67-4e08-b3ab-4422a7a0bcf6"
+            },
+            "name": {
+              "type": "string",
+              "example": "merchant_4"
+            },
+            "feePercent": {
+              "type": "number",
+              "example": 0.1224
+            }
+          }
+        },
+        "xml": {
+          "name": "GetMerchantsResponseBodySchema"
+        }
+      },
+      "CreateInvoiceRequestBodySchema": {
+        "type": "object",
+        "properties": {
+          "merchantId": {
+            "type": "string",
+            "example": "9232af0c-508d-402c-8fc8-08570a7ff5e1"
+          },
+          "currency": {
+            "type": "string",
+            "example": "RUB"
+          },
+          "amount": {
+            "type": "number",
+            "example": 1000000
+          }
+        },
+        "xml": {
+          "name": "CreateInvoiceRequestBodySchema"
+        }
+      },
+      "CreateInvoiceResponseBodySchema": {
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "string",
+            "example": "4158e099-b4b2-46d7-9d34-3afe735ca5c6"
+          },
+          "amountToReceive": {
+            "type": "number",
+            "example": 877600
+          },
+          "fee": {
+            "type": "number",
+            "example": 122400
+          }
+        },
+        "xml": {
+          "name": "CreateInvoiceResponseBodySchema"
+        }
+      },
+      "GetInvoiceStatusByIdResponseBodySchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "paid"
+          }
+        },
+        "xml": {
+          "name": "GetInvoiceStatusByIdResponseBodySchema"
+        }
+      }
+    }
+  }
+}

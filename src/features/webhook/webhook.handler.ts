@@ -62,6 +62,13 @@ export const webhookHandler = async (req: Request, res: Response) => {
     .createHmac('sha256', String(process.env.SECRET_KEY))
     .update(JSON.stringify({ invoiceId, status }))
     .digest('hex');
+  console.log(expectedSign);
+  if (expectedSign.length !== xSignature.length) {
+    res.status(401).send({
+      error: 'Invalid signature length',
+    });
+    return;
+  }
 
   const signMatches = crypto.timingSafeEqual(
     Buffer.from(xSignature, 'utf8'),
@@ -107,7 +114,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
   const updatedInvoice = await Invoice.findOneAndUpdate(
     { externalId: invoiceId },
     { status },
-    { new: true },
+    { returnDocument: 'after' },
   )
     .select({
       status: 1,

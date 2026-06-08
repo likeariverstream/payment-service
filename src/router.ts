@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { invoiceRouter } from '~/features/invoice/invoice.router.js';
 import { merchantRouter } from '~/features/merchant/merchant.router.js';
-import { webhookRouter } from '~/features/webhook/webhook-router.js';
+import { webhookRouter } from '~/features/webhook/webhook.router.js';
 
 export const apiV1Router = Router();
 
