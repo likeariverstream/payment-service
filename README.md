@@ -1,7 +1,11 @@
 # Сервис приёма платежей
 
+Стек: Express, TypeScript, MongoDb, Redis, Vitest
+
+Запуск проекта и тестов:
 1. Создать в корне проекта файл .env, заполнить переменные
-   Пример:
+   
+    Пример:
       ```
       NODE_ENV=development
       SECRET_KEY=OVfKXodmZMFd
@@ -23,17 +27,25 @@
    ```
 
 3. Установить зависимости
+
    ```npm ci```
 
 4. Запуск проекта в режиме разработки 
-  ```npm run dev```
-   Документация API по умолчанию - http://127.0.0.1:3000/api/docs
+  
+    ```npm run dev```
+  
+    Документация API по умолчанию - http://127.0.0.1:3000/api/docs
 
 5. Форматирование, линтинг
-  ```npm run format```
-  ```npm run lint:fix```
+  
+    ```npm run format```
+  
+   ```npm run lint:fix```
 
 6. Тесты (требуется Redis)
+
    ```npm run test```
+
 7. Собрать Swagger
+
    ```npm run swagger```
