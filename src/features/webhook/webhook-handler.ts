@@ -13,7 +13,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
 
   if (!xSignature) {
     res.status(400).send({
-      message: 'X-Signature is missing',
+      error: 'X-Signature is missing',
     });
 
     return;
@@ -21,7 +21,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
 
   if (!xTimestamp) {
     res.status(400).send({
-      message: 'X-Timestamp is missing',
+      error: 'X-Timestamp is missing',
     });
 
     return;
@@ -29,7 +29,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
 
   if (!xNonce) {
     res.status(400).send({
-      message: 'X-Nonce is missing',
+      error: 'X-Nonce is missing',
     });
 
     return;
@@ -46,23 +46,23 @@ export const webhookHandler = async (req: Request, res: Response) => {
 
   if (!invoice) {
     res.status(404).send({
-      message: 'Invoice not found',
+      error: 'Invoice not found',
     });
     return;
   }
 
   if (invoice.status === 'paid') {
     res.status(400).send({
-      message: 'Invoice already paid',
+      error: 'Invoice already paid',
     });
     return;
   }
 
   const expectedSign = crypto
     .createHmac('sha256', String(process.env.SECRET_KEY))
-    .update((req as any).rawBody)
+    .update(JSON.stringify({ invoiceId, status }))
     .digest('hex');
-  console.log(expectedSign);
+
   const signMatches = crypto.timingSafeEqual(
     Buffer.from(xSignature, 'utf8'),
     Buffer.from(expectedSign, 'utf8'),
@@ -70,7 +70,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
 
   if (!signMatches) {
     res.status(401).send({
-      message: 'Invalid signature',
+      error: 'Invalid signature',
     });
 
     return;
@@ -81,7 +81,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
 
   if (Number.isNaN(eventTimestamp) || eventTimestamp < fiveMinAgo) {
     res.status(401).send({
-      message: 'Invalid or expired timestamp',
+      error: 'Invalid or expired timestamp',
     });
 
     return;
@@ -91,7 +91,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
 
   if (existingNonce) {
     res.status(401).send({
-      message: 'nonce not unique',
+      error: 'Nonce not unique',
     });
 
     return;
@@ -114,11 +114,6 @@ export const webhookHandler = async (req: Request, res: Response) => {
       _id: 0,
     })
     .exec();
-
-  if (!updatedInvoice) {
-    res.status(404).send({ message: 'No invoice found' });
-    return;
-  }
 
   res.status(201).json(updatedInvoice);
 };

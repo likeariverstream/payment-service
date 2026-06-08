@@ -17,10 +17,10 @@ export const getInvoiceStatusByIdHandler = async (
 
   if (!invoice) {
     res.status(404).send({
-      message: 'Invoice not found',
+      error: 'Invoice not found',
     });
     return;
   }
 
-  res.json(invoice);
+  res.status(200).send(invoice);
 };
