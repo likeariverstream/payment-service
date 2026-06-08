@@ -11,7 +11,7 @@ export const createMerchantHandler = async (req: Request, res: Response) => {
 
   if (existingMerchant) {
     res.status(400).send({
-      message: 'Merchant already exists',
+      error: 'Merchant already exists',
     });
 
     return;
@@ -31,5 +31,5 @@ export const createMerchantHandler = async (req: Request, res: Response) => {
     feePercent: object.feePercent,
   };
 
-  res.json(result);
+  res.status(201).json(result);
 };

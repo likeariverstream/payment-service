@@ -1,8 +1,8 @@
 # Сервис приёма платежей
 
-1. Создать в корне проекта файл .env, заполнить переменные
-   Пример:
-    ```
+1. Создать в корне проекта файл .env, заполнить переменные Пример:
+
+   ```
    NODE_ENV=development
    SECRET_KEY=OVfKXodmZMFd
    REDIS_PORT=6380
@@ -15,16 +15,16 @@
    MONGO_PORT=27017
    MONGO_INITDB_ROOT_USERNAME=admin
    MONGO_INITDB_ROOT_PASSWORD=password
-    ```
+   ```
 
 2. Развернуть MongoDB и Redis
-    ```
-    docker compose up -d
-    ```
+
+   ```
+   docker compose up -d
+   ```
 
 3. Установить зависимости
 
-    ```npm ci```
+   `npm ci`
 
-4. Запуск проекта в режиме разработки
-   ```npm run dev```
+4. Запуск проекта в режиме разработки `npm run dev`

@@ -1,7 +1,9 @@
+import { dinero, multiply, subtract } from 'dinero.js';
 import { type Request, type Response } from 'express';
 
 import { Invoice } from '~/features/invoice/invoice.model.js';
 import { Merchant } from '~/features/merchant/merchant.model.js';
+import { getCurrency } from '~/utils/get-currency.js';
 
 export const createInvoiceHandler = async (req: Request, res: Response) => {
   const { amount, merchantId, currency } = req.body;
@@ -19,20 +21,39 @@ export const createInvoiceHandler = async (req: Request, res: Response) => {
 
   if (!merchant) {
     res.status(404).send({
-      error: 'merchant not found',
+      error: 'Merchant not found',
+    });
+    return;
+  }
+  const feePercent = merchant.feePercent;
+
+  const dineroCurrency = getCurrency(currency);
+
+  if (!dineroCurrency) {
+    res.status(400).send({
+      error: 'Currency not supported',
     });
     return;
   }
 
-  const feePercent = merchant.feePercent;
+  const dineroAmount = dinero({
+    amount: amount,
+    currency: dineroCurrency,
+  });
 
-  const fee = amount * feePercent;
-  const amountToReceive = amount - fee;
+  const dineroFee = multiply(dineroAmount, {
+    amount: feePercent,
+  });
+
+  const dineroAmountToReceive = subtract(dineroAmount, dineroFee);
+
+  const amountToReceive = dineroAmountToReceive.toJSON().amount;
+  const fee = dineroFee.toJSON().amount;
 
   const newInvoice = new Invoice({
     merchantId,
     amount,
-    amountToReceive: amountToReceive,
+    amountToReceive,
     fee,
     currency,
     status: 'pending',
@@ -48,5 +69,5 @@ export const createInvoiceHandler = async (req: Request, res: Response) => {
     fee: object.fee,
   };
 
-  res.json(result);
+  res.status(201).json(result);
 };
