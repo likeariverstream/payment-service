@@ -56,12 +56,10 @@ merchantRouter.get(
 #swagger.parameters['page'] = {
   in: 'query',
   type: 'number',
-  default: 1
 }
 #swagger.parameters['perPage'] = {
   in: 'query',
   type: 'number',
-  default: 50
 }
 */
 
